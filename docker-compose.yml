@@ -1,1 +1,71 @@
-version: "3.9"
+services:
+  app:
+    # Use image from ghcr.io
+    image: ghcr.io/georgeplekhanov/app:20260406-90c1d80 
+    # Or build from Dockerfile
+    # build:
+    #   context: ./app
+    # Set container name
+    container_name: app
+    # Set dependencies for startup order
+    depends_on:
+      - redis
+      - worker
+      - worker-redis
+    # Load environment variables from .env file
+    env_file:
+      - env
+    # Map port 5000 on host to port 5000 in container
+    ports:
+      - "5000:5000"
+    # Use network backend
+    networks:
+      - backend
+
+  worker:
+    # Use image from ghcr.io
+    image: ghcr.io/georgeplekhanov/worker:20260406-90c1d80 
+    # Or build from Dockerfile
+    # build:
+    #   context: ./worker
+    # Set container name
+    container_name: worker
+    # Load environment variables from .env file
+    env_file:
+      - env
+    # Use network backend
+    networks:
+      - backend
+
+  worker-redis:
+    # Use image from ghcr.io
+    image: ghcr.io/georgeplekhanov/worker-redis:20260406-90c1d80 
+    # Or build from Dockerfile
+    # build:
+    #   context: ./worker-redis
+    # Set container name
+    container_name: worker-redis
+    # Wait for redis startup
+    depends_on:
+      - redis
+    # Load environment variables from .env file
+    env_file:
+      - env
+    # Mount logs directory
+    volumes:
+      - ./logs:/var/log/worker
+    # Use network backend
+    networks:
+      - backend
+
+  redis:
+    # Use lightweight redis image
+    image: redis:8-alpine
+    # Use network backend
+    networks:
+      - backend
+
+# Create network
+networks:
+  backend:
+    driver: bridge

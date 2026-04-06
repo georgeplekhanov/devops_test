@@ -1,0 +1,66 @@
+name: Build And Push
+
+# Trigger the workflow on push events to the main branch
+on:
+  push:
+    branches:
+      - main
+
+# Permissions for the workflow
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build-and-push:
+    # Run cicd on ubuntu-latest
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      # Create tag name
+      - name: Prepare tags
+        id: vars
+        run: |
+          echo "image_tag=$(date -u +%Y%m%d)-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      # Login to GHCR for pushing images
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build and push app image
+      - name: app
+        uses: docker/build-push-action@v7
+        with:
+          context: ./app
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/app:latest
+            ghcr.io/${{ github.repository_owner }}/app:${{ steps.vars.outputs.image_tag }}
+
+      # Build and push worker image
+      - name: worker
+        uses: docker/build-push-action@v7
+        with:
+          context: ./worker
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/worker:latest
+            ghcr.io/${{ github.repository_owner }}/worker:${{ steps.vars.outputs.image_tag }}
+
+      # Build and push worker-redis image
+      - name: worker-redis
+        uses: docker/build-push-action@v7
+        with:
+          context: ./worker-redis
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/worker-redis:latest
+            ghcr.io/${{ github.repository_owner }}/worker-redis:${{ steps.vars.outputs.image_tag }}

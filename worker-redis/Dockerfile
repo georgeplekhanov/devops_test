@@ -1,5 +1,7 @@
 FROM python:3.11-slim
 
+# Create log directory
+RUN mkdir -p /var/log/worker
 # Directory where application will be located inside container
 WORKDIR /app
 
@@ -8,10 +10,10 @@ WORKDIR /app
 ENV PYTHONUNBUFFERED=1
 
 # Install dependencies
-RUN python -m pip install --no-cache-dir flask gunicorn
+RUN python -m pip install --no-cache-dir redis
 
 # Copy worker script to container
-COPY worker.py .
+COPY worker_redis.py .
 
-# Run worker with gunicorn for production with 2 workers for parallel request
-CMD ["gunicorn", "-b", "0.0.0.0:5001", "-w", "2", "worker:app"]
+# Run worker
+CMD ["python", "worker_redis.py"]

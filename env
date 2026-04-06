@@ -1,0 +1,4 @@
+WORKER_URL=http://worker:5001/process
+REDIS_HOST=redis
+REDIS_PORT=6379
+REDIS_CHANNEL=tasks
