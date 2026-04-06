@@ -1,7 +1,7 @@
 services:
   app:
     # Use image from ghcr.io
-    image: ghcr.io/georgeplekhanov/app:20260406-90c1d80 
+    image: ghcr.io/georgeplekhanov/app:20260406-4d213d9
     # Or build from Dockerfile
     # build:
     #   context: ./app
@@ -24,7 +24,7 @@ services:
 
   worker:
     # Use image from ghcr.io
-    image: ghcr.io/georgeplekhanov/worker:20260406-90c1d80 
+    image: ghcr.io/georgeplekhanov/worker:20260406-4d213d9
     # Or build from Dockerfile
     # build:
     #   context: ./worker
@@ -39,7 +39,7 @@ services:
 
   worker-redis:
     # Use image from ghcr.io
-    image: ghcr.io/georgeplekhanov/worker-redis:20260406-90c1d80 
+    image: ghcr.io/georgeplekhanov/worker-redis:20260406-4d213d9
     # Or build from Dockerfile
     # build:
     #   context: ./worker-redis
